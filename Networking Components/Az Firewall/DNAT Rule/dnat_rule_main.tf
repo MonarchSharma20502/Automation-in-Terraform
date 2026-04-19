@@ -1,4 +1,5 @@
 resource "azurerm_firewall_nat_rule_collection" "dnat_rule_collection" {
+  provider = monarch
   name                = var.dnat_rule_collection_name
   azure_firewall_name = var.firewall_name
   resource_group_name = var.resource_group_name
