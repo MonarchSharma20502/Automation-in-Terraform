@@ -27,3 +27,14 @@ variable "identity_type" {
   description = "Type of Managed Identity to create: SystemAssigned or UserAssigned"
   type = string
 }
+
+variable "ai_search_tags" {
+  description = "Tags for the AI Search Service"
+  type = map(string)
+  default = {
+    "environment" = "Development"
+    "owner"       = "Your Name"
+    "Cloud"       = "Azure"
+    "Instance_count" = "1"
+  }
+}
