@@ -28,6 +28,16 @@ variable "identity_type" {
   type = string
 }
 
+variable "partition_count" {
+  description = "Number of Partitions to create"
+  type = number
+  default = 1
+  validation {
+    condition = var.ai_search_sku != "free"
+    error_message = "Can't use Partition count with free tier of Search Service; Try other SKUs"
+  }
+}
+
 variable "ai_search_tags" {
   description = "Tags for the AI Search Service"
   type = map(string)
