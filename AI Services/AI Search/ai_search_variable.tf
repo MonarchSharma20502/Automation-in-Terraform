@@ -16,6 +16,10 @@ variable "resource_group_name" {
 variable "ai_search_sku" {
   description = "SKU tier of AI Search Service: basic, free, standard, standard2, standard3, storage_optimized_l1 and storage_optimized_l2"
   type = string
+  validation {
+    condition = contains(["basic","free","standard","standard2","standard3","storage_optimized_l1","storage_optimized_l2"], var.ai_search_sku)
+    error_message = "Invalid SKU tier. Please choose from: basic, free, standard, standard2, standard3, storage_optimized_l1, storage_optimized_l2"
+  }
 }
 
 variable "enable_managed_identity" {
@@ -26,6 +30,10 @@ variable "enable_managed_identity" {
 variable "identity_type" {
   description = "Type of Managed Identity to create: SystemAssigned or UserAssigned"
   type = string
+  validation {
+    condition = contains(["SystemAssigned","UserAssigned"], var.identity_type)
+    error_message = "The given input is invalid. The value must be either 'SystemAssigned' or 'UserAssigned'"
+  }
 }
 
 variable "partition_count" {
