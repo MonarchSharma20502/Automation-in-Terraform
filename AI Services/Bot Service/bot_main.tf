@@ -1,3 +1,6 @@
+# Fetching the Current Account running Terraform with Service Principal or Managed Identity authentication
+data "azurerm_client_config" "current" {}
+
 resource "azurerm_application_insights" "application_insights" {
   name                = var.application_insights_name
   location            = var.location
@@ -17,15 +20,12 @@ resource "azurerm_bot_service_azure_bot" "azure_bot" {
   resource_group_name     = azurerm.application_insights.application_insights.resource_group_name
   location                = var.location
   microsoft_app_id        = data.azurerm_client_config.current.client_id
-  microsoft_app_type      = "SingleTenant"
+  microsoft_app_type      = var.microsoft_app_type
   microsoft_app_tenant_id = data.azurerm_client_config.current.tenant_id
   sku                     = var.bot_service_sku
 
-  endpoint                              = "https://example.com"
+  endpoint                              = var.messaging_endpoint
   developer_app_insights_api_key        = azurerm_application_insights_api_key.application_insights_api_key.api_key
   developer_app_insights_application_id = azurerm_application_insights.application_insights.app_id
-
-  tags = {
-    environment = "test"
-  }
+  tags = var.bot_service_tags
 }
