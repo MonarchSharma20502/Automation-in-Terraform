@@ -1,0 +1,3 @@
+- Subnet is also created along with Network Interface inside this module.
+- If you have an existing subnet, you must reference it from the nic_data.tf file and pass it to the subnet_id variable in nic_variables.tf.
+- Just uncomment the commented code and comment the existing "ip_cofiguration" block from the nic_main.tf file.
