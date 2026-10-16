@@ -4,7 +4,7 @@ resource "azurerm_network_security_group" "nsg" {
   resource_group_name = var.resource_group_name
 
   dynamic "security_rule" {
-    for_each = var.security_rules == {} 
+    for_each = var.security_rules == {} ? {} : var.security_rules
     content {
       name                       = security_rule.key
       priority                   = security_rule.value.priority
@@ -17,7 +17,5 @@ resource "azurerm_network_security_group" "nsg" {
       destination_address_prefix = security_rule.value.destination_address_prefix
     }
   }
-
   tags = var.nsg_tags
-  
 }
