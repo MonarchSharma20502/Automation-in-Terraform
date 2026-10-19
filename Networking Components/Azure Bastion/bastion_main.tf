@@ -6,6 +6,7 @@ resource "azurerm_subnet" "azurebastionsubnet" {
   address_prefixes     = var.bastion_subnet_address_prefixes
 }
 
+# This block only runs when the SKU is not Premium. It iterates over the public IP configuration variable and creates a public IP resource for the Bastion. We directly passed a map object to the for_each argument, which allows us to access the properties of the public IP configuration variable using each.value.<property_name> syntax. This is a more concise and efficient way to create the public IP resource, as it avoids the need for a separate variable or data source to hold the public IP configuration.
 resource "azurerm_public_ip" "bastion_public_ip" {
   for_each = var.azure_bastion_host_sku == "Premium" ? {} : {"bastion_public_ip" = var.azurebastion_public_ip_configuration}
   name                = each.value.name
