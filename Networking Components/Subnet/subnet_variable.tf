@@ -14,7 +14,6 @@ variable "subnet_address_space" {
   description = "Address prefix for the subnet"
   type = list(string)
 }
-# Delegation is not tightly coupled with the subnet, so we can keep it as a separate variable. This will allow us to create subnets without delegations if needed. We'll combine it with the subnet variable when we create the resources in WORKLOAD.
 variable "delegations" {
   description = "Information for the Delegations of the Subnets"
   type = map(object({
