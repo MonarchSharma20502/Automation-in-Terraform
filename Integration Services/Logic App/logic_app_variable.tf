@@ -137,11 +137,10 @@ variable "storage_account_location" {
 variable "storage_account_access_key" {
   description = "Access Key of the Storage Account"
   type = string
-<<<<<<< HEAD
 }
 variable "storage_account_tier" {
   description = "Tier of the Storage Account. The possible values are 'Standard' and 'Premium'."
-  type = string 
+  type = string
 }
 variable "storage_account_replication_type" {
   description = "Replication Type of the Storage Account. The possible values are 'LRS', 'GRS', 'RAGRS', 'ZRS', 'GZRS', and 'RAGZRS'."
@@ -163,6 +162,4 @@ variable "storage_account_access_tier" {
     condition     = contains(["Hot", "Cool","Cold","Archive"], var.storage_account_access_tier)
     error_message = "Storage Account Access Tier must be one of: Hot, Cool, Cold, Archive. Please provide a valid value."
   }
-=======
->>>>>>> main
 }
