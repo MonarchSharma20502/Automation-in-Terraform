@@ -1,5 +1,5 @@
 # Logic app Variables
-variable "resource_group_name" {
+variable "logic_app_resource_group_name" {
   description = "Name of the Resource Group"
   type = string
 }
@@ -11,17 +11,27 @@ variable "logic_app_name" {
   description = "Name of the Logic App"
   type = string
 }
-variable "app_settings" {
-  description = "App Settings for the Logic App"
-  type = map(string)
-  default = {
-    # "WEBSITE_VNET_ROUTE_ALL"       = "1"
-    # "WEBSITE_CONTENTOVERVNET"      = "1"
-    "FUNCTIONS_WORKER_RUNTIME"     = var.functions_worker_runtime
-    "WEBSITE_DNS_SERVER"           = var.website_dns_server
-    "WEBSITE_NODE_DEFAULT_VERSION" = var.website_node_default_version
-  }
+variable "functions_worker_runtime" {
+  description = "Functions Worker Runtime for the Logic App"
+  type = string
+  default = "node"
 }
+variable "website_dns_server" {
+  description = "DNS Server for the Logic App"
+  type = string
+  default = "8.8.8.8"
+}
+variable "website_node_default_version" {
+  description = "Node.js Version for the Logic App"
+  type = string
+  default = "~20"
+}
+variable "maximum_elastic_worker_count" {
+  description = "Maximum Elastic Worker Count for the Logic App Service Plan"
+  type = number
+}
+
+# FOR PUBLIC LOGIC APP.
 variable "public_network_access" {
   description = "Public Network Access for the Logic App"
   type = string
@@ -65,6 +75,15 @@ variable "website_node_default_version" {
   type = string
   default = "~20"
 }
+variable "website_vnet_route_all_enabled" {
+  description = "Enable VNET Route All for the Logic App"
+  type = bool
+}
+variable "website_content_over_vnet_enabled" {
+  description = "Enable Content Over VNET for the Logic App"
+  type = bool
+}
+
 # This variable is tightly mapped (i.e., we can't declare these properties as separate variables in the workload as it will become difficult in accessing them in the main.tf).)
 variable "site_config" {
   description = "Optional site config block for the Logic App"
@@ -82,11 +101,15 @@ variable "site_config" {
 ########################################
 
 # App Service Plan Variables
+variable "app_service_plan_resource_group_name" {
+  description = "Resource Group Name of the App Service Plan"
+  type = string
+}
 variable "app_service_plan_name" {
   description = "Name of the App Service Plan"
   type = string
 }
-variable "sku_name" {
+variable "logic_app_service_plan_sku_name" {
   description = "SKU Name for the App Service Plan"
   type = string
 }
@@ -94,14 +117,15 @@ variable "os_type" {
   description = "OS Type for the App Service Plan"
   type = string
 }
-variable "maximum_elastic_worker_count" {
-  description = "Maximum Elastic Worker Count for the App Service Plan"
-  type = number
-}
+
 
 ########################################
 
 # Storage account variables
+variable "storage_account_resource_group_name" {
+  description = "Resource Group Name of the Storage Account"
+  type = string
+}
 variable "storage_account_name" {
   description = "Name of the Storage Account"
   type = string
