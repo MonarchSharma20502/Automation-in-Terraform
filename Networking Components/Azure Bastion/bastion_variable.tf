@@ -29,7 +29,7 @@ variable "azurebastion_public_ip_configuration" {
   }
   validation {
     condition = contains(["Basic","Standard"],var.azurebastion_public_ip_configuration.sku)
-    error_message = "The SKU of the Azure Bastion Public IP must be one of 'Basic', 'Standard'"
+    error_message = "The SKU of the Azure Bastion Public IP must be one of 'Basic', 'Standard' as Premium tier of Azure Bastion Host Service doesn't require a Public IP"
   }
 }
 

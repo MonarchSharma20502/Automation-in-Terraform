@@ -67,8 +67,8 @@ variable "microsoft_app_type" {
   description = "The type of the Microsoft App. Accepted values are SingleTenant or MultiTenant."
   type = string
   validation {
-    condition = var.microsoft_app_type == "SingleTenant" || var.microsoft_app_type == "MultiTenant"
-    error_message = "The given value must be either 'SingleTenant' or 'MultiTenant' for the Microsoft App Type"
+    condition = var.microsoft_app_type == "SingleTenant" || var.microsoft_app_type == "MultiTenant" || var.microsoft_app_type == "UserAssignedMSI"
+    error_message = "The given value must be either 'SingleTenant' or 'MultiTenant' or 'UserAssignedMSI' for the Microsoft App Type"
   }
 }
 
