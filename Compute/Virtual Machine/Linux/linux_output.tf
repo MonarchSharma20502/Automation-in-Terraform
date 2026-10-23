@@ -1,9 +1,9 @@
-output "vmName" {
-  value       = azurerm_linux_virtual_machine.VM.name
+output "linux_virtual_machine_name" {
+  value       = azurerm_linux_virtual_machine.linux_virtual_machine.name
   description = "The name of the Azure Virtual Machine."
 }
 
-output "vmId" {
-  value       = azurerm_linux_virtual_machine.VM.id
+output "id" {
+  value       = azurerm_linux_virtual_machine.linux_virtual_machine.id
   description = "The ID of the Azure Virtual Machine."
 }

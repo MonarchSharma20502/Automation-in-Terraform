@@ -1,38 +1,51 @@
 resource "azurerm_network_interface" "nic" {
-  name                          = var.nicName
+  name                          = var.nic_name
   location                      = var.location
-  resource_group_name           = var.rgName
-  # enable_accelerated_networking = var.enable_accelerated_networking
+  resource_group_name           = var.resource_group_name
   tags                          = var.tags
+  # enable_accelerated_networking = var.enable_accelerated_networking
 
-  ip_configuration {
-    name                          = var.vmConfig.nicIpConfiguration
-    subnet_id                     = var.subnetId
-    private_ip_address_allocation = var.vmConfig.nicPrivateIpAddressAllocation
-    private_ip_address_version    = var.private_ip_address_version
-    # public_ip_address_id          = azurerm_public_ip.public_ip.id
+  # We can have tags in multiple ways as shown below, either we can have a variable for tags and pass it to the resource or we can have a map of tags and merge it with the existing tags. Here, we are using the variable for tags and passing it to the resource.
+  # tags = merge(var.tags, { "Name" = var.nic_name })
+  # tags = var.tags != null ? merge(var.tags, { "Name" = var.nic_name }) : { "Name" = var.nic_name }
+  # tags = {
+  #   cloud = var.cloud
+  #   environment = var.environment
+  #   author = var.author
+  # }
+  dynamic "ip_configuration" {
+    for_each = var.ipconfig
+    content {
+      name = ip_configuration.key
+      subnet_id = ip_configuration.value.subnet_id
+      private_ip_address_allocation = ip_configuration.value.private_ip_address_allocation
+      private_ip_address_version = var.private_ip_address_version
+      primary = ip_configuration.value.primary
+      # This VM is along with a PUBLIC IP ADDRESS, for private deployment, remove this line in the module.
+      public_ip_address_id = azurerm_public_ip.public_ip.id
+    }
   }
 }
 
 
-# resource "azurerm_public_ip" "public_ip" {
-#   name                = var.publicIpName
-#   location            = var.location
-#   resource_group_name = var.rgname
-#   allocation_method   = var.vmConfig.publicIPAllocationMethod
-#   sku                 = var.publicIpSku
-#   tags                = var.tags
-#   lifecycle {
-#     ignore_changes = [
-#       ip_tags,
-#       zones
-#      ]
-#   }
-# }
+resource "azurerm_public_ip" "public_ip" {
+  name                = var.public_ip_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  allocation_method   = var.vmConfig.publicIPAllocationMethod
+  sku                 = var.public_ip_sku
+  tags                = var.tags
+  lifecycle {
+    ignore_changes = [
+      ip_tags,
+      zones
+     ]
+  }
+}
 
-resource "azurerm_linux_virtual_machine" "VM" {
-  name                            = var.vmName
-  resource_group_name             = var.rgName
+resource "azurerm_linux_virtual_machine" "linux_virtual_machine" {
+  name                            = var.linux_vm_name
+  resource_group_name             = var.resource_group_name
   location                        = var.location
   size                            = var.vmConfig.vmSize
   zone                            = var.vmConfig.availabilityZone
@@ -44,8 +57,9 @@ resource "azurerm_linux_virtual_machine" "VM" {
   secure_boot_enabled             = var.secure_boot_enabled
   network_interface_ids           = [azurerm_network_interface.nic.id]
 
+# The naming of the OS Disk is strict here, CHANGE IT IF FLEXIBILITY is required.
   os_disk {
-    name                 = var.vmStorageOsDiskName
+    name                 = lookup(var.os_disk_name, var.linux_vm_name+"-osdisk", var.linux_vm_name+"-osdisk")
     caching              = var.vmConfig.vmCaching
     storage_account_type = var.vmConfig.vmManagedDiskType
     disk_size_gb         = var.vmConfig.vmDiskSizeGB
