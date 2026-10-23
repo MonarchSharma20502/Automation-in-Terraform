@@ -1,37 +1,51 @@
 resource "azurerm_network_interface" "nic" {
-  name                = var.nicName
-  location            = var.location
-  resource_group_name = var.rgName
-  tags                = var.tags
+  name                          = var.nic_name
+  location                      = var.location
+  resource_group_name           = var.resource_group_name
+  tags                          = var.tags
+  # enable_accelerated_networking = var.enable_accelerated_networking
 
-
-  ip_configuration {
-    name                          = var.vmConfig.nicIpConfiguration
-    subnet_id                     = var.subnetId
-    private_ip_address_allocation = var.vmConfig.nicPrivateIpAddressAllocation
-    public_ip_address_id          = var.publicIpName != null ? azurerm_public_ip.public_ip[0].id : null
+  # We can have tags in multiple ways as shown below, either we can have a variable for tags and pass it to the resource or we can have a map of tags and merge it with the existing tags. Here, we are using the variable for tags and passing it to the resource.
+  # tags = merge(var.tags, { "Name" = var.nic_name })
+  # tags = var.tags != null ? merge(var.tags, { "Name" = var.nic_name }) : { "Name" = var.nic_name }
+  # tags = {
+  #   cloud = var.cloud
+  #   environment = var.environment
+  #   author = var.author
+  # }
+  dynamic "ip_configuration" {
+    for_each = var.ipconfig
+    content {
+      name = ip_configuration.key
+      subnet_id = ip_configuration.value.subnet_id
+      private_ip_address_allocation = ip_configuration.value.private_ip_address_allocation
+      private_ip_address_version = var.private_ip_address_version
+      primary = ip_configuration.value.primary
+      # This VM is along with a PUBLIC IP ADDRESS, for private deployment, remove this line in the module.
+      public_ip_address_id = azurerm_public_ip.public_ip.id
+    }
   }
 }
 
+
 resource "azurerm_public_ip" "public_ip" {
-  count               = var.publicIpName != null ? 1 : 0
-  name                = var.publicIpName
+  name                = var.public_ip_name
   location            = var.location
-  resource_group_name = var.rgName
-  allocation_method   = var.publicIpAllocationMethod
-  sku                 = var.publicIpSku
+  resource_group_name = var.resource_group_name
+  allocation_method   = var.vmConfig.publicIPAllocationMethod
+  sku                 = var.public_ip_sku
   tags                = var.tags
-  # lifecycle {
-  #   ignore_changes = [ 
-  #     ip_tags,
-  #     zones
-  #    ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      ip_tags,
+      zones
+     ]
+  }
 }
 
-resource "azurerm_windows_virtual_machine" "vm" {
-  name                = var.vmName
-  resource_group_name = var.rgName
+resource "azurerm_windows_virtual_machine" "windows_virtual_machine" {
+  name                = var.windows_vm_name
+  resource_group_name = var.resource_group_name
   location            = var.location
   size                = var.vmConfig.vmSize
   zone                = var.vmConfig.availabilityZone
@@ -60,17 +74,18 @@ resource "azurerm_windows_virtual_machine" "vm" {
     type = "SystemAssigned"
   }
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     # admin_password,
-  #     # private_ip_address,
-  #     # public_ip_address,
-  #     # patch_assessment_mode,
-  #     # secure_boot_enabled,
-  #     # vtpm_enabled,
-  #     # encryption_at_host_enabled,
-  #     # virtual_machine_id
-  #     identity 
-  #   ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      admin_password,
+      private_ip_address,
+      public_ip_address,
+      patch_assessment_mode,
+      secure_boot_enabled,
+      vtpm_enabled,
+      encryption_at_host_enabled,
+      virtual_machine_id,
+      identity,
+      additional_capabilities
+    ]
+  }
 }
