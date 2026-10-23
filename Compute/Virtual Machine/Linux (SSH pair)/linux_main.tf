@@ -49,14 +49,21 @@ resource "azurerm_linux_virtual_machine" "linux_virtual_machine" {
   location                        = var.location
   size                            = var.vmConfig.vmSize
   zone                            = var.vmConfig.availabilityZone
-  admin_username                  = var.vmConfig.vmAdminUsername
-  admin_password                  = var.vmConfig.vmAdminPassword
+  
+  # admin_username                  = var.vmConfig.vmAdminUsername
+  # admin_password                  = var.vmConfig.vmAdminPassword
   disable_password_authentication = var.vmConfig.vmDisablePasswordAuthentication
   vtpm_enabled                    = var.vtpm_enabled
   tags                            = var.tags
   secure_boot_enabled             = var.secure_boot_enabled
   network_interface_ids           = [azurerm_network_interface.nic.id]
 
+  # Generate a pair of SSH keys at the path (~/.ssh/authorized_keys/id_rsa.pub).
+  admin_ssh_key {
+    # paste the public key here and keep the private key in the local machine at ~/.ssh/authorized_keys and save the private key in the local machine
+    public_key = file("~/.ssh/authorized_keys/id_rsa.pub") # or var.ssh_public_key\
+    username = var.vmConfig.vmAdminUsername
+  }
 # The naming of the OS Disk is strict here, CHANGE IT IF FLEXIBILITY is required.
   os_disk {
     name                 = lookup(var.os_disk_name, var.linux_vm_name+"-osdisk", var.linux_vm_name+"-osdisk")

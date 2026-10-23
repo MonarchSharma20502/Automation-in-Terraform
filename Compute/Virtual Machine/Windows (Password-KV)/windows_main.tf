@@ -19,7 +19,7 @@ resource "azurerm_network_interface" "nic" {
       name = ip_configuration.key
       subnet_id = ip_configuration.value.subnet_id
       private_ip_address_allocation = ip_configuration.value.private_ip_address_allocation
-      private_ip_address_version = var.private_ip_address_version
+      private_ip_address_version = ip_configuration.value.private_ip_address_version
       primary = ip_configuration.value.primary
       # This VM is along with a PUBLIC IP ADDRESS, for private deployment, remove this line in the module.
       public_ip_address_id = azurerm_public_ip.public_ip.id
@@ -32,7 +32,7 @@ resource "azurerm_public_ip" "public_ip" {
   name                = var.public_ip_name
   location            = var.location
   resource_group_name = var.resource_group_name
-  allocation_method   = var.vmConfig.publicIPAllocationMethod
+  allocation_method   = var.public_ip_allocation_method
   sku                 = var.public_ip_sku
   tags                = var.tags
   lifecycle {
@@ -43,6 +43,7 @@ resource "azurerm_public_ip" "public_ip" {
   }
 }
 
+
 resource "azurerm_windows_virtual_machine" "windows_virtual_machine" {
   name                = var.windows_vm_name
   resource_group_name = var.resource_group_name
@@ -50,7 +51,7 @@ resource "azurerm_windows_virtual_machine" "windows_virtual_machine" {
   size                = var.vmConfig.vmSize
   zone                = var.vmConfig.availabilityZone
   admin_username      = var.vmConfig.adminUsername
-  admin_password      = var.admin_password
+  # admin_password      = var.admin_password
   computer_name       = var.computerName
   tags                = var.tags
   network_interface_ids = [

@@ -58,7 +58,7 @@ variable "vmConfig" {
   type = object({
     vmSize                          = string
     vmAdminUsername                 = string
-    vmAdminPassword                 = string
+    # vmAdminPassword                 = string
     vmPublisher                     = string
     vmOffer                         = string
     vmSku                           = string
@@ -68,7 +68,7 @@ variable "vmConfig" {
     vmDiskSizeGB                    = string
     # Storage_account_type or vmManagedDiskType can only have: Standard_LRS, Premium_LRS, StandardSSD_LRS, or UltraSSD_LRS as valid inputs
     vmManagedDiskType               = string
-    vmDisablePasswordAuthentication = string
+    vmDisablePasswordAuthentication = bool
     nicIpConfiguration              = string
     nicPrivateIpAddressAllocation   = string
     # publicIPAllocationMethod        = string
